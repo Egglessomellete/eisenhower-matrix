@@ -1,16 +1,84 @@
-# React + Vite
+# Eisenhower Matrix
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple, fast task manager based on the Eisenhower Decision Matrix — sort your tasks into four quadrants by urgency and importance, and keep your list in one focused view.
 
-Currently, two official plugins are available:
+**Live app:** _add your Vercel link here once deployed_
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it does
 
-## React Compiler
+- Add tasks and assign them to one of four categories
+- Check off tasks as complete
+- Delete tasks you no longer need
+- Tasks persist automatically in the browser (localStorage) — close the tab and they're still there when you come back
+- Responsive layout — works on both desktop and mobile screens
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quadrants
 
-## Expanding the ESLint configuration
+| Quadrant | Meaning |
+|---|---|
+| Urgent and Important | Do these now |
+| Urgent, not Important | Do quickly, or delegate |
+| Important, not Urgent | Schedule time for these |
+| Habit | Recurring, ongoing items |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech stack
+
+- [React 19](https://react.dev/)
+- [Vite](https://vite.dev/) — dev server and build tool
+- Plain CSS (no framework)
+- Browser `localStorage` for persistence
+
+## Getting started
+
+Clone the repo and install dependencies:
+
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+npm install
+```
+
+Run the dev server:
+
+```bash
+npm run dev
+```
+
+Open the URL shown in your terminal (usually `http://localhost:5173`).
+
+## Available scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Starts the local dev server with hot reload |
+| `npm run build` | Builds a production-ready bundle into `dist/` |
+| `npm run preview` | Serves the production build locally, for a final check before deploying |
+| `npm run lint` | Runs ESLint over the project |
+
+## Project structure
+
+```
+src/
+  App.jsx      # All components: Header, Task form, Matrix, Card, List
+  App.css      # Styling for the matrix, cards, tasks, and form
+  main.jsx     # React entry point
+  index.css    # Global resets
+```
+
+## How it works
+
+- All tasks live in a single array in `App`, the top-level component (state is "lifted up" so every part of the UI reads from one source of truth).
+- Adding a task builds an object with a unique `id`, its name, its category, and a `completed` flag, then hands it up to `App` via a callback prop.
+- Each quadrant (`Card`) filters that shared array down to just its own category — nothing is stored per-quadrant, it's all derived from the one list.
+- A `useEffect` watches the tasks array and writes it to `localStorage` any time it changes, which is what makes tasks survive a page refresh.
+
+## Roadmap
+
+- [ ] Drag-and-drop tasks between quadrants
+- [ ] Accounts + sync across devices (Supabase)
+- [ ] Google Calendar integration
+- [ ] "Add to Home Screen" support for a native-app feel on mobile
+
+## License
+
+Not yet decided.

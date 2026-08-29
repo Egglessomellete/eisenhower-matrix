@@ -1,0 +1,352 @@
+/* ===========================
+   GOOGLE FONT
+=========================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* ===========================
+   GLOBAL
+=========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: #08111d;
+  color: white;
+  padding: 35px;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: #9ca3af;
+  font-size: 1.1rem;
+}
+
+/* ===========================
+   ADD TASK SECTION
+=========================== */
+
+.task-form {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #111827;
+  padding: 20px 10px;
+  border-radius: 18px;
+  border: 1px solid #253044;
+  margin-bottom: 35px;
+}
+
+.task-form input,
+.task-form select {
+  flex: 1;
+  background: #0d1625;
+  color: white;
+  border: 1px solid #2b3b52;
+  border-radius: 12px;
+  padding: 15px 28px;
+  margin: 10px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.25s;
+}
+
+.task-form input:focus,
+.task-form select:focus {
+  border-color: #22c55e;
+}
+
+.task-form input::placeholder {
+  color: #7b8794;
+}
+
+/* ===========================
+   ADD BUTTON
+=========================== */
+
+.add-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 15px 28px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-btn:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   MATRIX GRID
+=========================== */
+
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+/* ===========================
+   QUADRANTS
+=========================== */
+
+.card {
+  background: #111827;
+  border-radius: 18px;
+  padding: 22px;
+  border: 2px solid #263244;
+  min-height: 400px;
+}
+
+/* Different Borders */
+
+.green {
+  border-color: #22c55e;
+}
+
+.blue {
+  border-color: #3b82f6;
+}
+
+.orange {
+  border-color: #f59e0b;
+}
+
+.pink {
+  border-color: #ec4899;
+}
+
+/* ===========================
+   CARD HEADER
+=========================== */
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.number {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 25px;
+  font-weight: bold;
+  display: grid;
+  place-items: center;
+  color: white;
+}
+
+.green .number {
+  background: #22c55e;
+}
+
+.blue .number {
+  background: #3b82f6;
+}
+
+.orange .number {
+  background: #f59e0b;
+}
+
+.pink .number {
+  background: #ec4899;
+}
+
+.card h2 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.card p {
+  color: #9ca3af;
+}
+
+/* ===========================
+   TASK LIST
+=========================== */
+
+.task-list {
+  margin-top: 15px;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #192231;
+
+  padding: 15px 18px;
+  border-radius: 12px;
+
+  margin-bottom: 15px;
+
+  border: 1px solid #2a374a;
+
+  transition: 0.25s;
+}
+
+.task:hover {
+  transform: translateY(-3px);
+  border-color: #22c55e;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.circle {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #22c55e;
+  border-radius: 50%;
+}
+
+.task span {
+  font-size: 17px;
+}
+
+/* ===========================
+   ACTION BUTTONS
+=========================== */
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  font-size: 18px;
+  transition: 0.25s;
+}
+
+.edit-btn {
+  background: #2563eb;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #ef4444;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+.card-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 17px;
+  color: #9ca3af;
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #394150;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 1000px) {
+  .matrix {
+    grid-template-columns: 1fr;
+  }
+
+  .task-form {
+    flex-direction: column;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+
+  header h1 {
+    font-size: 2.3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card h2 {
+    font-size: 22px;
+  }
+
+  .task {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .actions {
+    align-self: flex-end;
+  }
+}

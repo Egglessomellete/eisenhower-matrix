@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+ /*
+<header>
+    <h1>Eisenhower Matrix</h1>
+    <p></p>
+</header>
+
+<div class="task-form">
+    <input type="text" placeholder="Enter a task">
+
+    <select>
+        <option>Importance</option>
+    </select>
+
+    <select>
+        <option>Urgency</option>
+    </select>
+
+    <button class="add-btn">+ Add Task</button>
+</div>
+
+<div class="matrix">
+
+    <div class="card green">
+        <div class="card-header">
+            <div class="card-title">
+                <div class="number">1</div>
+                <div>
+                    <h2>Urgent & Important</h2>
+                    <p>Do these tasks immediately</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-list">
+
+            <div class="task">
+                <div class="task-left">
+                    <div class="circle"></div>
+                    <span>Finish project report</span>
+                </div>
+
+                <div class="actions">
+                    <button class="edit-btn">✏️</button>
+                    <button class="delete-btn">🗑️</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer">
+            3 Tasks
+        </div>
+    </div>
+
+</div>
+/* 

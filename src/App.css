@@ -304,6 +304,85 @@ header p {
 ::-webkit-scrollbar-track {
   background: #111827;
 }
+/* ===========================
+   LOGIN SCREEN
+=========================== */
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.login-screen h1 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.login-screen form {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #111827;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #253044;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-screen input {
+  flex: 1;
+  background: #0d1625;
+  color: white;
+  border: 1px solid #2b3b52;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.25s;
+}
+
+.login-screen input:focus {
+  border-color: #22c55e;
+}
+
+.login-screen input::placeholder {
+  color: #7b8794;
+}
+
+.login-screen button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 15px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+.login-screen button:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+.login-message {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+.login-error {
+  color: #ef4444;
+}
 
 /* ===========================
    RESPONSIVE
@@ -348,5 +427,16 @@ header p {
 
   .actions {
     align-self: flex-end;
+  }
+  .login-screen h1 {
+    font-size: 2rem;
+  }
+
+  .login-screen form {
+    flex-direction: column;
+  }
+
+  .login-screen button {
+    width: 100%;
   }
 }

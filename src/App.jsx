@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-
+import { supabase } from "./supabaseClient";
+import LoginScreen from "./LoginScreen";
 import "./App.css";
 
 const App = () => {
@@ -10,32 +11,99 @@ const App = () => {
     Habit: "pink",
   };
 
-  function handleAdd(newtask) {
-    setTasks((tasks) => [...tasks, newtask]);
+  async function handleAdd(newtask) {
+    const { data, error } = await supabase
+      .from("tasks")
+      .insert({
+        name: newtask.name,
+        type: newtask.type,
+        completed: false,
+        user_id: session.user.id,
+      })
+      .select();
+    if (error) {
+      console.error(error.message);
+      return;
+    } else {
+      setTasks((tasks) => [...tasks, data[0]]);
+    }
   }
-  function handleDeleteitem(id) {
+  async function handleDeleteitem(id) {
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) {
+      console.error(error.message);
+      return;
+    }
     setTasks((tasks) => tasks.filter((task) => task.id !== id));
   }
 
-  function handleToggleItem(id) {
+  async function handleToggleItem(id) {
+    const task = tasks.find((t) => t.id === id);
+    const { error } = await supabase
+      .from("tasks")
+      .update({ completed: !task.completed })
+      .eq("id", id);
+    if (error) {
+      console.error(error.message);
+      return;
+    }
     setTasks((tasks) =>
       tasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task,
       ),
     );
   }
-  const [tasks, setTasks] = useState(function () {
-    const storedValue = localStorage.getItem("tasks");
-    return storedValue ? JSON.parse(storedValue) : [];
-  });
+  async function handleLogin(email) {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (error) throw error;
+  }
+  const [session, setSession] = useState(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
   useEffect(
     function () {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+      if (!session) {
+        setTasks([]);
+        return;
+      }
+
+      async function loadTasks() {
+        const { data, error } = await supabase
+          .from("tasks")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .order("created_at", { ascending: true });
+        if (error) {
+          console.error(error.message);
+        } else {
+          setTasks(data);
+        }
+      }
+      loadTasks();
     },
-    [tasks],
+    [session],
   );
+  useEffect(function () {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setSessionLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+  if (sessionLoading) return <p>Loading...</p>;
+  if (!session) return <LoginScreen onLogin={handleLogin} />;
   return (
     <div>
+      <button onClick={() => supabase.auth.signOut()}>Log out</button>
       <Header />
       <Task onAdd={handleAdd} category={category} />
       <Matrix
@@ -70,7 +138,6 @@ function Task({ onAdd, category }) {
   }
   useEffect(function () {
     function callback(e) {
-      console.log("Key pressed:", e.code);
       if (e.code === "Escape") {
         inputEl.current?.blur();
       }
@@ -146,7 +213,7 @@ function Card({
             {filteredArr.map((x) => (
               <List
                 x={x}
-                key={x.name}
+                key={x.id}
                 handleDeleteitem={handleDeleteitem}
                 handleToggleItem={handleToggleItem}
               />

@@ -250,7 +250,8 @@ header p {
 
 .edit-btn,
 .delete-btn {
-  width: 42px;
+  width: auto;
+  padding: 0 14px;
   height: 42px;
 
   border-radius: 10px;

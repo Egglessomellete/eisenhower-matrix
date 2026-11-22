@@ -441,3 +441,39 @@ header p {
     width: 100%;
   }
 }
+/* Fluid page padding: 15px on phones up to 35px on large screens */
+body {
+  padding: clamp(15px, 4vw, 35px);
+}
+
+/* Let flex children shrink instead of overflowing (fixes the login button sticking out) */
+.task-form input,
+.task-form select,
+.login-screen input {
+  min-width: 0;
+}
+
+/* Easy-to-tap controls: at least 44px tall */
+.add-btn,
+.nav-logout,
+.nav-links a,
+.delete-btn {
+  min-height: 44px;
+}
+
+@media (max-width: 600px) {
+  /* Empty quadrants don't need 400px of height on a phone */
+  .card {
+    min-height: 0;
+  }
+
+  .task-form {
+    padding: 12px;
+  }
+
+  .task-form input,
+  .task-form select {
+    margin: 0;
+    padding: 14px 16px;
+  }
+}

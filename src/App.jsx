@@ -44,7 +44,7 @@ const App = () => {
       <NavBar />
       <Routes>
         <Route path="/" element={<MatrixPage {...taskApi} />} />
-        <Route path="/planner" element={<PlannerPage />} />
+        <Route path="/planner" element={<PlannerPage {...taskApi} />} />
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

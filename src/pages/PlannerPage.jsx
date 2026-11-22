@@ -1,5 +1,14 @@
-function PlannerPage() {
-  return <h2>Planner (coming next)</h2>;
+import WeekGrid from "../components/planner/WeekGrid";
+
+function PlannerPage({ tasks }) {
+  return (
+    <>
+      <header>
+        <h1>Planner</h1>
+      </header>
+      <WeekGrid tasks={tasks} />
+    </>
+  );
 }
 
 export default PlannerPage;

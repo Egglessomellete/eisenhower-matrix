@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { addWeeks, format, getDay, isToday } from "date-fns";
 import { CATEGORY } from "../../constants";
 import { getWeekDays, toDateString } from "../../utils/calendarHelpers";
+import { getMaxDuration } from "../../utils/scheduling";
 import { useNow } from "../../hooks/useNow";
 import {
   END_HOUR,
@@ -10,10 +11,12 @@ import {
   START_HOUR,
   durationToHeight,
   minutesToTop,
+  snapMinutes,
   timeToMinutes,
 } from "../../utils/timeCalculations";
 import "./WeekGrid.css";
 
+const MIN_DURATION = 30; // shortest allowed block, in minutes
 const HOURS = Array.from(
   { length: END_HOUR - START_HOUR },
   (_, i) => START_HOUR + i,
@@ -28,34 +31,71 @@ function formatHour(hour) {
   return format(new Date(2000, 0, 1, hour), "h a");
 }
 
-function TaskBlock({ task }) {
+function TaskBlock({ task, maxDuration, onResize }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     data: { task },
   });
 
+  // While resizing we show a temporary duration; null means "use the saved one".
+  const [liveDuration, setLiveDuration] = useState(null);
+  const resizeRef = useRef(null);
+  const duration = liveDuration ?? task.duration_mins;
+
   const top = minutesToTop(timeToMinutes(task.start_time));
-  const height = durationToHeight(task.duration_mins);
   const color = CATEGORY[task.type];
+
+  function handleResizeStart(e) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId); // keep receiving moves outside the handle
+    resizeRef.current = { startY: e.clientY, startDuration: task.duration_mins };
+  }
+
+  function handleResizeMove(e) {
+    if (!resizeRef.current) return;
+    const deltaMins = (e.clientY - resizeRef.current.startY) / (HOUR_HEIGHT / 60);
+    const next = snapMinutes(resizeRef.current.startDuration + deltaMins);
+    setLiveDuration(Math.max(MIN_DURATION, Math.min(next, maxDuration)));
+  }
+
+  function handleResizeEnd() {
+    if (!resizeRef.current) return;
+    const finalDuration = liveDuration ?? task.duration_mins;
+    resizeRef.current = null;
+    setLiveDuration(null);
+    if (finalDuration !== task.duration_mins) onResize(task.id, finalDuration);
+  }
+
+  // Stop the handle's mouse/touch events from reaching the block,
+  // otherwise dnd-kit would start dragging the whole block.
+  const stop = (e) => e.stopPropagation();
 
   return (
     <div
       ref={setNodeRef}
       className={`task-block tb-${color}${task.completed ? " tb-done" : ""}${isDragging ? " tb-dragging" : ""}`}
-      style={{ top, height }}
+      style={{ top, height: durationToHeight(duration) }}
       {...listeners}
       {...attributes}
     >
       <b>{task.name}</b>
       <div className="tb-time">
-        {task.start_time.slice(0, 5)} · {task.duration_mins} min
+        {task.start_time.slice(0, 5)} · {duration} min
       </div>
+      <div
+        className="resize-handle"
+        title="Drag to resize"
+        onPointerDown={handleResizeStart}
+        onPointerMove={handleResizeMove}
+        onPointerUp={handleResizeEnd}
+        onPointerCancel={handleResizeEnd}
+        onMouseDown={stop}
+        onTouchStart={stop}
+      />
     </div>
   );
 }
 
-// One day's drop zone. The id is both the dnd-kit id and the DOM id, so the
-// drop handler can measure the element when the drag ends.
 function DayBody({ dateStr, children }) {
   const dropId = `day:${dateStr}`;
   const { setNodeRef, isOver } = useDroppable({ id: dropId });
@@ -78,7 +118,7 @@ function NowLine({ now }) {
   return <div className="now-line" style={{ top: minutesToTop(minutes) }} />;
 }
 
-function WeekGrid({ tasks }) {
+function WeekGrid({ tasks, onResize }) {
   const [anchor, setAnchor] = useState(new Date());
   const [dayIndex, setDayIndex] = useState(todayIndex);
   const now = useNow();
@@ -149,7 +189,12 @@ function WeekGrid({ tasks }) {
                 </div>
                 <DayBody dateStr={dateStr}>
                   {dayTasks.map((task) => (
-                    <TaskBlock key={task.id} task={task} />
+                    <TaskBlock
+                      key={task.id}
+                      task={task}
+                      maxDuration={getMaxDuration(dayTasks, task)}
+                      onResize={onResize}
+                    />
                   ))}
                   {isToday(day) && <NowLine now={now} />}
                 </DayBody>

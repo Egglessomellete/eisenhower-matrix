@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -11,6 +11,7 @@ import {
 import Backlog from "../components/planner/Backlog";
 import WeekGrid from "../components/planner/WeekGrid";
 import { CATEGORY } from "../constants";
+import { hasConflict } from "../utils/scheduling";
 import {
   clampStart,
   minutesToTime,
@@ -19,13 +20,22 @@ import {
 } from "../utils/timeCalculations";
 import "../components/planner/Planner.css";
 
-const DEFAULT_DURATION = 60; // minutes, for a task scheduled for the first time
+const DEFAULT_DURATION = 60;
 
 function PlannerPage({ tasks, scheduleTask, unscheduleTask }) {
   const [activeTask, setActiveTask] = useState(null);
+  const [notice, setNotice] = useState("");
 
-  // Sensors decide HOW a drag starts: mouse after 5px, touch after a 200ms hold
-  // (so normal scrolling still works), and the keyboard for accessibility.
+  // Hide the notice after 3 seconds. The cleanup cancels the timer if it changes first.
+  useEffect(
+    function () {
+      if (!notice) return;
+      const id = setTimeout(() => setNotice(""), 3000);
+      return () => clearTimeout(id);
+    },
+    [notice],
+  );
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
@@ -39,31 +49,39 @@ function PlannerPage({ tasks, scheduleTask, unscheduleTask }) {
   function handleDragEnd(event) {
     const { active, over } = event;
     setActiveTask(null);
-    if (!over) return; // dropped on nothing
+    if (!over) return;
 
     const task = tasks.find((t) => t.id === active.id);
     if (!task) return;
 
-    // Dropped back on the Unscheduled panel
     if (over.id === "backlog") {
       if (task.scheduled_date) unscheduleTask(task.id);
       return;
     }
 
-    // Dropped on a day: work out the start time from where the block's top edge landed.
     const dayEl = document.getElementById(String(over.id));
     const dragged = active.rect.current.translated;
     if (!dayEl || !dragged) return;
 
+    const dateStr = String(over.id).replace("day:", "");
     const relativeTop = dragged.top - dayEl.getBoundingClientRect().top;
     const duration = task.duration_mins ?? DEFAULT_DURATION;
     const start = clampStart(snapMinutes(topToMinutes(relativeTop)), duration);
 
+    if (hasConflict(tasks, dateStr, start, duration, task.id)) {
+      setNotice("That time slot is already taken.");
+      return; // nothing is saved, so the block stays where it was
+    }
+
     scheduleTask(task.id, {
-      scheduled_date: String(over.id).replace("day:", ""),
+      scheduled_date: dateStr,
       start_time: minutesToTime(start),
       duration_mins: duration,
     });
+  }
+
+  function handleResize(id, durationMins) {
+    scheduleTask(id, { duration_mins: durationMins });
   }
 
   return (
@@ -77,12 +95,17 @@ function PlannerPage({ tasks, scheduleTask, unscheduleTask }) {
         <h1>Planner</h1>
       </header>
 
+      {notice && (
+        <p className="planner-notice" role="status">
+          {notice}
+        </p>
+      )}
+
       <div className="planner-layout">
         <Backlog tasks={tasks} />
-        <WeekGrid tasks={tasks} />
+        <WeekGrid tasks={tasks} onResize={handleResize} />
       </div>
 
-      {/* The floating copy that follows your finger or cursor */}
       <DragOverlay>
         {activeTask ? (
           <div className={`drag-preview tb-${CATEGORY[activeTask.type]}`}>

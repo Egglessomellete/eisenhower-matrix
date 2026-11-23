@@ -10,12 +10,18 @@
   min-width: 0;
 }
 
+.planner-notice {
+  margin-bottom: 12px;
+  color: #f59e0b;
+  font-size: 14px;
+}
+
 .backlog {
   background: #111827;
   border: 1px solid #263244;
   border-radius: 14px;
   padding: 16px;
-  max-height: 40vh;
+  max-height: 45vh;
   overflow-y: auto;
 }
 
@@ -76,7 +82,6 @@
   font-size: 13px;
 }
 
-/* Draggable blocks in the grid */
 .task-block {
   cursor: grab;
   touch-action: none;
@@ -86,11 +91,33 @@
   opacity: 0.35;
 }
 
+/* Resize grip along the bottom edge of a block */
+.resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12px;
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 24px;
+  height: 3px;
+  margin-left: -12px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
 .day-body.over {
   background-color: rgba(34, 197, 94, 0.06);
 }
 
-/* The floating copy shown while dragging */
 .drag-preview {
   width: 100%;
   height: 100%;

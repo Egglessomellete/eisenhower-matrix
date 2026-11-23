@@ -68,16 +68,17 @@ export function useTasks(session) {
     );
   }
 
-  // Set date, start time and duration in ONE update (the database rule needs all three).
-  async function scheduleTask(id, schedule) {
-    const { error } = await supabase.from("tasks").update(schedule).eq("id", id);
+  // OPTIMISTIC UPDATE: change the screen first, save in the background,
+  // and roll back if the database refuses.
+  async function scheduleTask(id, changes) {
+    const previous = tasks.find((t) => t.id === id);
+    setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, ...changes } : t)));
+
+    const { error } = await supabase.from("tasks").update(changes).eq("id", id);
     if (error) {
       console.error(error.message);
-      return;
+      setTasks((ts) => ts.map((t) => (t.id === id ? previous : t)));
     }
-    setTasks((tasks) =>
-      tasks.map((t) => (t.id === id ? { ...t, ...schedule } : t)),
-    );
   }
 
   function unscheduleTask(id) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { useTasks } from "./hooks/useTasks";
+import { useSemester } from "./hooks/useSemester";
 import LoginScreen from "./LoginScreen";
 import NavBar from "./components/NavBar";
 import MatrixPage from "./pages/MatrixPage";
@@ -13,6 +14,7 @@ const App = () => {
   const [session, setSession] = useState(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const taskApi = useTasks(session);
+  const semesterApi = useSemester(session);
 
   useEffect(function () {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -45,7 +47,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<MatrixPage {...taskApi} />} />
         <Route path="/planner" element={<PlannerPage {...taskApi} />} />
-        <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/attendance" element={<AttendancePage {...semesterApi} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

@@ -38,7 +38,9 @@ function PlannerPage({ tasks, scheduleTask, unscheduleTask }) {
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
     useSensor(KeyboardSensor),
   );
 
@@ -92,7 +94,7 @@ function PlannerPage({ tasks, scheduleTask, unscheduleTask }) {
       onDragCancel={() => setActiveTask(null)}
     >
       <header>
-        <h1>Planner</h1>
+        <h1> Weekly Planner</h1>
       </header>
 
       {notice && (

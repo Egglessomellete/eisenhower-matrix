@@ -20,8 +20,8 @@
   background: #111827;
   border: 1px solid #263244;
   border-radius: 14px;
-  padding: 16px;
-  max-height: 45vh;
+  padding: 14px;
+  max-height: 40vh;
   overflow-y: auto;
 }
 
@@ -30,11 +30,12 @@
 }
 
 .backlog h3 {
-  margin-bottom: 4px;
+  font-size: 1rem;
+  margin-bottom: 2px;
 }
 
 .backlog-group {
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .backlog-group-title {
@@ -62,9 +63,10 @@
 .backlog-item {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 8px 12px;
   margin-bottom: 6px;
+  font-size: 14px;
   background: #192231;
   border: 1px solid #2a374a;
   border-radius: 10px;
@@ -91,7 +93,6 @@
   opacity: 0.35;
 }
 
-/* Resize grip along the bottom edge of a block */
 .resize-handle {
   position: absolute;
   left: 0;
@@ -130,15 +131,29 @@
   transform: scale(1.03);
 }
 
+/* Wide screens: panel and grid share one fixed height; each scrolls inside itself. */
 @media (min-width: 900px) {
   .planner-layout {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
+    height: calc(100vh - 240px);
+    min-height: 520px;
   }
 
   .backlog {
     width: 300px;
     flex-shrink: 0;
-    max-height: 70vh;
+    height: 100%;
+    max-height: none;
+  }
+
+  .planner-layout .week {
+    height: 100%;
+  }
+
+  .planner-layout .week-scroll {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
   }
 }

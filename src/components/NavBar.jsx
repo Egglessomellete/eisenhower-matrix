@@ -10,8 +10,8 @@ function NavBar() {
         <NavLink to="/" end>
           Matrix
         </NavLink>
-        <NavLink to="/planner">Planner</NavLink>
-        <NavLink to="/attendance">Attendance</NavLink>
+        <NavLink to="/planner">Weekly Planner</NavLink>
+        <NavLink to="/attendance">Attendance Tracker</NavLink>
       </div>
       <button className="nav-logout" onClick={() => supabase.auth.signOut()}>
         Log out

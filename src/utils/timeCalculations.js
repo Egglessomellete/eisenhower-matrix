@@ -1,6 +1,7 @@
 export const START_HOUR = 6; // the grid starts at 6:00 AM
+export const END_HOUR = 23; // the grid ends at 11:00 PM
 export const HOUR_HEIGHT = 60; // pixels per hour
-const PX_PER_MIN = HOUR_HEIGHT / 60; // derived, so changing HOUR_HEIGHT updates everything
+const PX_PER_MIN = HOUR_HEIGHT / 60;
 
 // "14:30:00" or "14:30" -> 870 (minutes since midnight)
 export function timeToMinutes(time) {
@@ -20,7 +21,7 @@ export function minutesToTop(minutes) {
   return (minutes - START_HOUR * 60) * PX_PER_MIN;
 }
 
-// pixels from the top of the grid -> minutes since midnight (the inverse)
+// pixels from the top of the grid -> minutes since midnight
 export function topToMinutes(top) {
   return top / PX_PER_MIN + START_HOUR * 60;
 }
@@ -33,4 +34,11 @@ export function durationToHeight(durationMins) {
 // round to the nearest step, 15 minutes by default
 export function snapMinutes(minutes, step = 15) {
   return Math.round(minutes / step) * step;
+}
+
+// keep a block of `durationMins` fully inside the visible grid
+export function clampStart(startMinutes, durationMins) {
+  const min = START_HOUR * 60;
+  const max = END_HOUR * 60 - durationMins;
+  return Math.max(min, Math.min(startMinutes, max));
 }

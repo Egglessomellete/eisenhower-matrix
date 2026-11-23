@@ -1,0 +1,117 @@
+/* Phone layout first: the panel stacks above the grid. */
+.planner-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.planner-layout .week {
+  flex: 1;
+  min-width: 0;
+}
+
+.backlog {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 14px;
+  padding: 16px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.backlog.over {
+  border-color: #22c55e;
+}
+
+.backlog h3 {
+  margin-bottom: 4px;
+}
+
+.backlog-group {
+  margin-top: 14px;
+}
+
+.backlog-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.bl-green {
+  color: #22c55e;
+}
+
+.bl-blue {
+  color: #3b82f6;
+}
+
+.bl-orange {
+  color: #f59e0b;
+}
+
+.bl-pink {
+  color: #ec4899;
+}
+
+.backlog-item {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: #192231;
+  border: 1px solid #2a374a;
+  border-radius: 10px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.backlog-item.dragging {
+  opacity: 0.4;
+}
+
+.backlog-empty {
+  margin-top: 10px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* Draggable blocks in the grid */
+.task-block {
+  cursor: grab;
+  touch-action: none;
+}
+
+.tb-dragging {
+  opacity: 0.35;
+}
+
+.day-body.over {
+  background-color: rgba(34, 197, 94, 0.06);
+}
+
+/* The floating copy shown while dragging */
+.drag-preview {
+  width: 100%;
+  height: 100%;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 12px;
+  color: white;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+  transform: scale(1.03);
+}
+
+@media (min-width: 900px) {
+  .planner-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .backlog {
+    width: 300px;
+    flex-shrink: 0;
+    max-height: 70vh;
+  }
+}

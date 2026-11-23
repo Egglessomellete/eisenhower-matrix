@@ -6,6 +6,7 @@ import {
   topToMinutes,
   durationToHeight,
   snapMinutes,
+  clampStart,
 } from "./timeCalculations";
 
 describe("time calculations", () => {
@@ -20,8 +21,8 @@ describe("time calculations", () => {
   });
 
   it("maps minutes to pixels", () => {
-    expect(minutesToTop(360)).toBe(0); // 6:00 AM is the top
-    expect(minutesToTop(540)).toBe(180); // 9:00 AM
+    expect(minutesToTop(360)).toBe(0);
+    expect(minutesToTop(540)).toBe(180);
   });
 
   it("maps pixels back to minutes", () => {
@@ -36,5 +37,11 @@ describe("time calculations", () => {
     expect(snapMinutes(487)).toBe(480);
     expect(snapMinutes(488)).toBe(495);
     expect(snapMinutes(500, 30)).toBe(510);
+  });
+
+  it("keeps a block inside the grid", () => {
+    expect(clampStart(300, 60)).toBe(360); // too early -> 6:00 AM
+    expect(clampStart(600, 60)).toBe(600); // fine as it is
+    expect(clampStart(1400, 60)).toBe(1320); // too late -> ends at 11 PM
   });
 });

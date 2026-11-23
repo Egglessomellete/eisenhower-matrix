@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-// A custom hook: a function starting with "use" that bundles state + effects
-// so any component can reuse it.
 export function useTasks(session) {
   const [tasks, setTasks] = useState([]);
 
@@ -70,5 +68,32 @@ export function useTasks(session) {
     );
   }
 
-  return { tasks, handleAdd, handleDeleteitem, handleToggleItem };
+  // Set date, start time and duration in ONE update (the database rule needs all three).
+  async function scheduleTask(id, schedule) {
+    const { error } = await supabase.from("tasks").update(schedule).eq("id", id);
+    if (error) {
+      console.error(error.message);
+      return;
+    }
+    setTasks((tasks) =>
+      tasks.map((t) => (t.id === id ? { ...t, ...schedule } : t)),
+    );
+  }
+
+  function unscheduleTask(id) {
+    return scheduleTask(id, {
+      scheduled_date: null,
+      start_time: null,
+      duration_mins: null,
+    });
+  }
+
+  return {
+    tasks,
+    handleAdd,
+    handleDeleteitem,
+    handleToggleItem,
+    scheduleTask,
+    unscheduleTask,
+  };
 }

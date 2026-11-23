@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { addWeeks, format, getDay, isToday } from "date-fns";
 import { CATEGORY } from "../../constants";
 import { getWeekDays, toDateString } from "../../utils/calendarHelpers";
 import { useNow } from "../../hooks/useNow";
 import {
+  END_HOUR,
   HOUR_HEIGHT,
   START_HOUR,
   durationToHeight,
@@ -12,14 +14,12 @@ import {
 } from "../../utils/timeCalculations";
 import "./WeekGrid.css";
 
-const END_HOUR = 23;
 const HOURS = Array.from(
   { length: END_HOUR - START_HOUR },
   (_, i) => START_HOUR + i,
 );
 const GRID_HEIGHT = HOURS.length * HOUR_HEIGHT;
 
-// getDay: Sunday = 0 ... Saturday = 6. We want Monday = 0.
 function todayIndex() {
   return (getDay(new Date()) + 6) % 7;
 }
@@ -29,19 +29,45 @@ function formatHour(hour) {
 }
 
 function TaskBlock({ task }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: task.id,
+    data: { task },
+  });
+
   const top = minutesToTop(timeToMinutes(task.start_time));
   const height = durationToHeight(task.duration_mins);
   const color = CATEGORY[task.type];
 
   return (
     <div
-      className={`task-block tb-${color}${task.completed ? " tb-done" : ""}`}
+      ref={setNodeRef}
+      className={`task-block tb-${color}${task.completed ? " tb-done" : ""}${isDragging ? " tb-dragging" : ""}`}
       style={{ top, height }}
+      {...listeners}
+      {...attributes}
     >
       <b>{task.name}</b>
       <div className="tb-time">
         {task.start_time.slice(0, 5)} · {task.duration_mins} min
       </div>
+    </div>
+  );
+}
+
+// One day's drop zone. The id is both the dnd-kit id and the DOM id, so the
+// drop handler can measure the element when the drag ends.
+function DayBody({ dateStr, children }) {
+  const dropId = `day:${dateStr}`;
+  const { setNodeRef, isOver } = useDroppable({ id: dropId });
+
+  return (
+    <div
+      id={dropId}
+      ref={setNodeRef}
+      className={`day-body${isOver ? " over" : ""}`}
+      style={{ height: GRID_HEIGHT }}
+    >
+      {children}
     </div>
   );
 }
@@ -53,8 +79,8 @@ function NowLine({ now }) {
 }
 
 function WeekGrid({ tasks }) {
-  const [anchor, setAnchor] = useState(new Date()); // any date inside the shown week
-  const [dayIndex, setDayIndex] = useState(todayIndex); // the day shown on phones
+  const [anchor, setAnchor] = useState(new Date());
+  const [dayIndex, setDayIndex] = useState(todayIndex);
   const now = useNow();
 
   const days = getWeekDays(anchor);
@@ -84,7 +110,6 @@ function WeekGrid({ tasks }) {
         </div>
       </div>
 
-      {/* Phones show one day at a time; these tabs pick which one. */}
       <div className="day-tabs">
         {days.map((day, i) => (
           <button
@@ -100,7 +125,6 @@ function WeekGrid({ tasks }) {
       </div>
 
       <div className="week-scroll">
-        {/* CSS variable fed from JS so the CSS lines and the maths always agree */}
         <div className="week-grid" style={{ "--hour-h": `${HOUR_HEIGHT}px` }}>
           <div className="time-col">
             <div className="time-head" />
@@ -123,12 +147,12 @@ function WeekGrid({ tasks }) {
                   <span>{format(day, "EEE")}</span>
                   <b>{format(day, "d")}</b>
                 </div>
-                <div className="day-body" style={{ height: GRID_HEIGHT }}>
+                <DayBody dateStr={dateStr}>
                   {dayTasks.map((task) => (
                     <TaskBlock key={task.id} task={task} />
                   ))}
                   {isToday(day) && <NowLine now={now} />}
-                </div>
+                </DayBody>
               </div>
             );
           })}
